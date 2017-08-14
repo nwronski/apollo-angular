@@ -1,7 +1,10 @@
 import { Injectable, Provider } from '@angular/core';
 import { rxify } from 'apollo-client-rxjs';
-import { ApolloClient, ApolloQueryResult, WatchQueryOptions, MutationOptions, SubscriptionOptions } from 'apollo-client';
-import { Observable } from 'rxjs/Observable';
+import ApolloClient, {
+  ApolloQueryResult, WatchQueryOptions, MutationOptions, SubscriptionOptions,
+  ApolloExecutionResult,
+} from 'apollo-client';
+import { Observable, ObservableInput } from 'rxjs/Observable';
 import { from } from 'rxjs/observable/from';
 
 import { ApolloQueryObservable } from './ApolloQueryObservable';
@@ -28,14 +31,14 @@ export class ApolloBase {
     );
   }
 
-  public mutate<T>(options: MutationOptions): Observable<ApolloQueryResult<T>> {
-    return wrapWithZone<ApolloQueryResult<T>>(
-      fromPromise<ApolloQueryResult<T>>(() => this.client.mutate<T>(options)),
+  public mutate<T>(options: MutationOptions): Observable<ApolloExecutionResult<T>> {
+    return wrapWithZone<ApolloExecutionResult<T>>(
+      fromPromise<ApolloExecutionResult<T>>(() => this.client.mutate<T>(options)),
     );
   }
 
   public subscribe(options: SubscriptionOptions): Observable<any> {
-    return wrapWithZone<any>(from(this.client.subscribe(options)));
+    return wrapWithZone<any>(from(this.client.subscribe(options) as ObservableInput<any>));
   }
 
   public getClient(): ApolloClient {
